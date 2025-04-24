@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="02580452af09443390194182de598951" Name="Diagram1" ZoomLevel="95">
+        <EntityTypeShape EntityType="CulturaBCNModel.asientos" Width="1.5" PointX="3" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.chats" Width="1.5" PointX="5.25" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.eventos" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.mensajes" Width="1.5" PointX="7.5" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.reservas_entradas" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.roles" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.salas" Width="1.5" PointX="1.5" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CulturaBCNModel.usuarios" Width="1.5" PointX="3" PointY="2.875" IsExpanded="true" />
+        <AssociationConnector Association="CulturaBCNModel.fk_asiento_evento" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_reserva_asiento" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_chat_usuario1" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_chat_usuario2" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_mensaje_chat" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_evento_sala" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_mensaje_usuario" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_reserva_usuario" ManuallyRouted="false" />
+        <AssociationConnector Association="CulturaBCNModel.fk_usuario_rol" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
