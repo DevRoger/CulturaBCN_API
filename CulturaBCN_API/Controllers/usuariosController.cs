@@ -23,12 +23,32 @@ namespace CulturaBCN_API.Controllers
             return db.usuarios;
         }
 
+        /*
+         * NO se puede utilizar porque tenemos dos clases, una para cada ID. Entonces al hacer llamada a la API en Android, da error por la clase definida en la Call.
+         * 
         // GET: api/usuarios/rol/{id}
         [HttpGet]
         [Route("api/usuarios/rol/{id:int}")]
         public IQueryable<usuarios> GetUsuariosPorRol(int id)
         {
             return db.usuarios.Where(u => u.id_rol == id);
+        }
+        */
+
+        // GET: api/usuarios/rol/1
+        [HttpGet]
+        [Route("api/usuarios/rol/1")]
+        public IQueryable<usuarios> GetUsuariosRol1()
+        {
+            return db.usuarios.Where(u => u.id_rol == 1);
+        }
+
+        // GET: api/usuarios/rol/2
+        [HttpGet]
+        [Route("api/usuarios/rol/2")]
+        public IQueryable<usuarios> GetUsuariosRol2()
+        {
+            return db.usuarios.Where(u => u.id_rol == 2);
         }
 
         // GET: api/usuarios/5
