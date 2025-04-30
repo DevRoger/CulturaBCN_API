@@ -23,6 +23,14 @@ namespace CulturaBCN_API.Controllers
             return db.usuarios;
         }
 
+        // GET: api/usuarios/rol/{id}
+        [HttpGet]
+        [Route("api/usuarios/rol/{id:int}")]
+        public IQueryable<usuarios> GetUsuariosPorRol(int id)
+        {
+            return db.usuarios.Where(u => u.id_rol == id);
+        }
+
         // GET: api/usuarios/5
         [ResponseType(typeof(usuarios))]
         public async Task<IHttpActionResult> Getusuarios(int id)
