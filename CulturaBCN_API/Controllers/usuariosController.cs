@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using CulturaBCN_API.Models;
@@ -98,7 +101,7 @@ namespace CulturaBCN_API.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
+        /* 
         // POST: api/usuarios
         [ResponseType(typeof(usuarios))]
         public async Task<IHttpActionResult> Postusuarios(usuarios usuarios)
@@ -112,7 +115,7 @@ namespace CulturaBCN_API.Controllers
             await db.SaveChangesAsync();
 
             return CreatedAtRoute("DefaultApi", new { id = usuarios.id_usuario }, usuarios);
-        }
+        }*/
 
         // DELETE: api/usuarios/5
         [ResponseType(typeof(usuarios))]
@@ -142,6 +145,90 @@ namespace CulturaBCN_API.Controllers
         private bool usuariosExists(int id)
         {
             return db.usuarios.Count(e => e.id_usuario == id) > 0;
+        }
+
+
+        // POST: api/usuarios
+        [ResponseType(typeof(int))]
+        public IHttpActionResult Postusuarios()
+        {
+            var file = HttpContext.Current.Request.Files["photo"];
+            if (file == null || file.ContentLength == 0)
+            {
+                return BadRequest("No se ha proporcionado ningún archivo.");
+            }
+
+            string nombre = HttpContext.Current.Request.Form["nombre"];
+            string apellidos = HttpContext.Current.Request.Form["apellidos"];
+            string correo = HttpContext.Current.Request.Form["correo"];
+            string contrasena_hash = HttpContext.Current.Request.Form["contrasena_hash"];
+            DateTime fecha_nacimiento = DateTime.Parse(HttpContext.Current.Request.Form["fecha_nacimiento"]);
+            String telefono = HttpContext.Current.Request.Form["telefono"];
+            int id_rol = int.Parse(HttpContext.Current.Request.Form["id_rol"]);
+
+            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(apellidos) || string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(contrasena_hash) || fecha_nacimiento == null || string.IsNullOrEmpty(telefono)
+                 || id_rol == null)
+            {
+                return BadRequest("Todos los campos son obligatorios.");
+            }
+            usuarios usu = new usuarios();
+
+            usu.nombre = nombre;
+            usu.foto_url = "";
+            usu.apellidos = apellidos; 
+            usu.correo = correo;
+            usu.contrasena_hash = contrasena_hash;
+            usu.telefono = telefono;
+            usu.fecha_nacimiento = fecha_nacimiento;
+            usu.id_rol = id_rol;
+            
+            db.usuarios.Add(usu);
+            db.SaveChanges();
+
+            string savedFilePath = SaveFile(file, usu.id_usuario);
+
+            usu.foto_url = savedFilePath;
+
+            db.Entry(usu).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Ok(usu.id_usuario);
+
+        }
+        private string SaveFile(HttpPostedFile file, int userId)
+        {
+            try
+            {
+                string relativePath = Path.Combine("Data", "Usuarios");
+                string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+
+
+                if (!Directory.Exists(fullPath))
+                {
+                    Directory.CreateDirectory(fullPath);
+                }
+
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    throw new Exception($"Tipo de archivo no permitido. Extensiones válidas: {string.Join(", ", allowedExtensions)}");
+                }
+
+
+                string fileName = $"avatar.{userId}{fileExtension}";
+
+
+                string filePath = Path.Combine(fullPath, fileName);
+                file.SaveAs(filePath);
+
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al guardar el archivo: {ex.Message}", ex);
+            }
         }
     }
 }
