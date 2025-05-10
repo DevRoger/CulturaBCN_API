@@ -101,21 +101,6 @@ namespace CulturaBCN_API.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-        /* 
-        // POST: api/usuarios
-        [ResponseType(typeof(usuarios))]
-        public async Task<IHttpActionResult> Postusuarios(usuarios usuarios)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.usuarios.Add(usuarios);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = usuarios.id_usuario }, usuarios);
-        }*/
 
         // DELETE: api/usuarios/5
         [ResponseType(typeof(usuarios))]
