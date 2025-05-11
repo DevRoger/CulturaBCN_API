@@ -40,56 +40,51 @@ namespace CulturaBCN_API.Controllers
 
         // PUT: api/eventos/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Puteventos(int id, eventos eventos)
+        public async Task<IHttpActionResult> Puteventos()
         {
-            if (!ModelState.IsValid)
+            var file = HttpContext.Current.Request.Files["photo"];
+            if (file == null || file.ContentLength == 0)
             {
-                return BadRequest(ModelState);
+                return BadRequest("No se ha proporcionado ningún archivo.");
             }
 
-            if (id != eventos.id_evento)
-            {
-                return BadRequest();
-            }
+            string nombre = HttpContext.Current.Request.Form["nombre"];
+            string descripcion = HttpContext.Current.Request.Form["descripcion"];
+            string lugar = HttpContext.Current.Request.Form["lugar"];
+            DateTime fecha = DateTime.Parse(HttpContext.Current.Request.Form["fecha"]);
+            TimeSpan hora_inicio = TimeSpan.Parse(HttpContext.Current.Request.Form["hora_inicio"]);
+            TimeSpan hora_fin = TimeSpan.Parse(HttpContext.Current.Request.Form["hora_fin"]);
+            decimal precio = decimal.Parse(HttpContext.Current.Request.Form["precio"]);
+            bool enumerado = bool.Parse(HttpContext.Current.Request.Form["enumerado"]);
+            int edad_minima = int.Parse(HttpContext.Current.Request.Form["edad_minima"]);
+            int id_sala = int.Parse(HttpContext.Current.Request.Form["id_sala"]);
+            string foto_url = HttpContext.Current.Request.Form["foto_url"];
+            int id_evento = int.Parse(HttpContext.Current.Request.Form["id_evento"]);
 
-            db.Entry(eventos).State = EntityState.Modified;
+            eventos evento = db.eventos.Find(id_evento);
 
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!eventosExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            evento.precio = precio;
+            evento.fecha = fecha;
+            evento.nombre = nombre;
+            evento.descripcion = descripcion;
+            evento.fecha = fecha;
+            evento.hora_fin = hora_fin;
+            evento.hora_inicio = hora_inicio;
+            evento.enumerado = enumerado;
+            evento.id_sala = id_sala;
+            evento.edad_minima = edad_minima;
+            evento.lugar = lugar;
+            evento.nombre = nombre;
+            file.SaveAs(foto_url);
 
-            return StatusCode(HttpStatusCode.NoContent);
+            db.Entry(evento).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+
+            return Ok(true);
         }
 
         // POST: api/eventos
         [ResponseType(typeof(eventos))]
-        public async Task<IHttpActionResult> Posteventos(eventos eventos)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.eventos.Add(eventos);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = eventos.id_evento }, eventos);
-        }
-
-        // POST: api/eventos
-        [ResponseType(typeof(int))]
         public IHttpActionResult Postusuarios()
         {
             var file = HttpContext.Current.Request.Files["photo"];
@@ -136,7 +131,7 @@ namespace CulturaBCN_API.Controllers
             evento.foto_url = savedFilePath;
             db.Entry(evento).State = EntityState.Modified;
             db.SaveChanges();
-            return Ok(evento.id_evento);
+            return Ok(evento);
 
         }
         private string SaveFile(HttpPostedFile file, int userId)

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
 using CulturaBCN_API.Models;
 
 namespace CulturaBCN_API.Controllers
@@ -68,38 +69,40 @@ namespace CulturaBCN_API.Controllers
         }
 
         // PUT: api/usuarios/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Putusuarios(int id, usuarios usuarios)
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> Putusuarios()
         {
-            if (!ModelState.IsValid)
+            var file = HttpContext.Current.Request.Files["photo"];
+            if (file == null || file.ContentLength == 0)
             {
-                return BadRequest(ModelState);
+                return BadRequest("No se ha proporcionado ningún archivo.");
             }
+            int id_usuario = int.Parse(HttpContext.Current.Request.Form["id_usuario"]);
+            string nombre = HttpContext.Current.Request.Form["nombre"];
+            string apellidos = HttpContext.Current.Request.Form["apellidos"];
+            string correo = HttpContext.Current.Request.Form["correo"];
+            string foto_url = HttpContext.Current.Request.Form["foto_url"];
+            string contrasena_hash = HttpContext.Current.Request.Form["contrasena_hash"];
+            DateTime fecha_nacimiento = DateTime.Parse(HttpContext.Current.Request.Form["fecha_nacimiento"]);
+            String telefono = HttpContext.Current.Request.Form["telefono"];
+            int id_rol = int.Parse(HttpContext.Current.Request.Form["id_rol"]);
 
-            if (id != usuarios.id_usuario)
-            {
-                return BadRequest();
-            }
+            usuarios usu = db.usuarios.Find(id_usuario);
 
-            db.Entry(usuarios).State = EntityState.Modified;
+            usu.nombre = nombre;
+            usu.correo = correo;
+            usu.apellidos = apellidos;
+            usu.id_rol = id_rol;
+            usu.contrasena_hash=contrasena_hash;
+            usu.telefono = telefono;
+            usu.fecha_nacimiento= fecha_nacimiento;
 
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!usuariosExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            file.SaveAs(foto_url);
+            
+            db.Entry(usu).State = EntityState.Modified;
+            await db.SaveChangesAsync();
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(true);
         }
 
         // DELETE: api/usuarios/5
@@ -134,7 +137,7 @@ namespace CulturaBCN_API.Controllers
 
 
         // POST: api/usuarios
-        [ResponseType(typeof(int))]
+        [ResponseType(typeof(usuarios))]
         public IHttpActionResult Postusuarios()
         {
             var file = HttpContext.Current.Request.Files["photo"];
@@ -177,8 +180,49 @@ namespace CulturaBCN_API.Controllers
             db.Entry(usu).State = EntityState.Modified;
             db.SaveChanges();
 
-            return Ok(usu.id_usuario);
+            return Ok(usu);
 
+        }
+        // POST: api/usuarios/imagen
+        [HttpPost]
+        [Route("api/usuarios/imagen")]
+        public IHttpActionResult ObtenerImagenPost([FromBody] RutaImagenDto datos)
+        {
+
+            
+            if (datos == null || string.IsNullOrWhiteSpace(datos.Foto_url))
+                return BadRequest("Ruta no válida.");
+
+            string rutaImagen = datos.Foto_url;
+
+            if (!System.IO.File.Exists(rutaImagen))
+                return NotFound();
+
+            var bytes = System.IO.File.ReadAllBytes(rutaImagen);
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(bytes)
+            };
+
+            string extension = Path.GetExtension(rutaImagen).ToLowerInvariant();
+            string mime;
+            switch (extension)
+            {
+                case ".jpg":
+                case ".jpeg":
+                    mime = "image/jpeg"; break;
+                case ".png":
+                    mime = "image/png"; break;
+                case ".gif":
+                    mime = "image/gif"; break;
+                case ".bmp":
+                    mime = "image/bmp"; break;
+                default:
+                    mime = "application/octet-stream"; break;
+            }
+
+            result.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mime);
+            return ResponseMessage(result);
         }
         private string SaveFile(HttpPostedFile file, int userId)
         {
