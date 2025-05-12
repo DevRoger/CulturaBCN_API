@@ -10,7 +10,7 @@
             <PropertyRef Name="id_asiento" />
           </Key>
           <Property Name="id_asiento" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="numero" Type="int" Nullable="false" />
+          <Property Name="numero" Type="varchar" MaxLength="5" />
           <Property Name="disponible" Type="bit" Nullable="false" />
           <Property Name="id_evento" Type="int" Nullable="false" />
         </EntityType>
@@ -256,7 +256,7 @@
             <PropertyRef Name="id_asiento" />
           </Key>
           <Property Name="id_asiento" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="numero" Type="Int32" Nullable="false" />
+          <Property Name="numero" Type="String" />
           <Property Name="disponible" Type="Boolean" Nullable="false" />
           <Property Name="id_evento" Type="Int32" Nullable="false" />
         </EntityType>
