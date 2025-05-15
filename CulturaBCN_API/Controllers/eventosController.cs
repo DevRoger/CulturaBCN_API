@@ -38,6 +38,43 @@ namespace CulturaBCN_API.Controllers
             return Ok(eventos);
         }
 
+        // GET: api/eventos/byuser/{userId}/reserved
+        [HttpGet]
+        [Route("api/eventos/byuser/{userId}/reserved")]
+        [ResponseType(typeof(IEnumerable<eventos>))]
+        public async Task<IHttpActionResult> GetReservedEventsForUser(int userId)
+        {
+            try
+            {
+                var userExists = await db.usuarios.AnyAsync(u => u.id_usuario == userId);
+
+                if (!userExists)
+                {
+                    return NotFound();
+                }
+
+                var reservedEvents = await db.reservas_entradas
+                                            .Where(r => r.id_usuario == userId)
+                                            .Join(db.asientos,
+                                                  reserva => reserva.id_asiento,
+                                                  asiento => asiento.id_asiento,
+                                                  (reserva, asiento) => new { reserva, asiento })
+                                            .Join(db.eventos,
+                                                  combined => combined.asiento.id_evento,
+                                                  evento => evento.id_evento,
+                                                  (combined, evento) => evento)
+                                            .Distinct()
+                                            .ToListAsync();
+
+                return Ok(reservedEvents);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting reserved events for user {userId}: " + ex.Message);
+                return InternalServerError(ex);
+            }
+        }
+
         // PUT: api/eventos/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Puteventos()
