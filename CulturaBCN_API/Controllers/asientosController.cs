@@ -36,6 +36,63 @@ namespace CulturaBCN_API.Controllers
             return Ok(asientos);
         }
 
+        [HttpGet]
+        [Route("api/asientos/eventoasientoscounts/{id}")]
+        [ResponseType(typeof(int))] 
+        public async Task<IHttpActionResult> GetAsientoCountForEvent(int id) 
+        {
+            try
+            {
+                var eventExists = await db.eventos.AnyAsync(e => e.id_evento == id);
+
+                if (!eventExists)
+                {
+                    return NotFound();
+                }
+
+
+                var seatCount = await db.asientos
+                                        .Where(a => a.id_evento == id)
+                                        .CountAsync();
+
+
+                return Ok(seatCount);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error executing GetAsientoCountForEvent for Event ID {id}: " + ex.Message);
+                return InternalServerError(ex); // Retorna un error 500 Internal Server Error
+            }
+        }
+
+        // GET: api/asientos/eventoasientoscounts
+        [HttpGet]
+        [Route("api/asientos/eventoasientoscounts")]
+        public IHttpActionResult GetEventoAsientosCounts()
+        {
+            try
+            {
+                var result = db.eventos
+                    .GroupJoin(db.asientos, 
+                               evento => evento.id_evento, 
+                               asiento => asiento.id_evento, 
+                               (evento, asientosGrupo) => new 
+                               {
+                                   IdEvento = evento.id_evento,
+                                   NombreEvento = evento.nombre,
+                                   NumeroAsientos = asientosGrupo.Count() 
+                               })
+                    .ToList(); 
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error executing GetEventoAsientosCountsLinq: " + ex.Message);
+                return InternalServerError(ex);
+            }
+        }
+
         // PUT: api/asientos/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Putasientos(int id, asientos asientos)

@@ -22,7 +22,7 @@ namespace CulturaBCN_API.Controllers
         // GET: api/eventos
         public IQueryable<eventos> Geteventos()
         {
-            return db.eventos;
+            return db.eventos.OrderBy(e => e.fecha); ;
         }
 
         // GET: api/eventos/5
