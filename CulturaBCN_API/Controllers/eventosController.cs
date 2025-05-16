@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -91,7 +92,10 @@ namespace CulturaBCN_API.Controllers
             DateTime fecha = DateTime.Parse(HttpContext.Current.Request.Form["fecha"]);
             TimeSpan hora_inicio = TimeSpan.Parse(HttpContext.Current.Request.Form["hora_inicio"]);
             TimeSpan hora_fin = TimeSpan.Parse(HttpContext.Current.Request.Form["hora_fin"]);
-            decimal precio = decimal.Parse(HttpContext.Current.Request.Form["precio"]);
+            string rawPrecio = HttpContext.Current.Request.Form["precio"];
+            string normalized = rawPrecio.Replace(".", "").Replace(",", ".");
+
+            decimal precio = decimal.Parse(normalized, CultureInfo.InvariantCulture);
             bool enumerado = bool.Parse(HttpContext.Current.Request.Form["enumerado"]);
             int edad_minima = int.Parse(HttpContext.Current.Request.Form["edad_minima"]);
             int id_sala = int.Parse(HttpContext.Current.Request.Form["id_sala"]);
@@ -136,7 +140,9 @@ namespace CulturaBCN_API.Controllers
             DateTime fecha = DateTime.Parse(HttpContext.Current.Request.Form["fecha"]);
             TimeSpan hora_inicio = TimeSpan.Parse(HttpContext.Current.Request.Form["hora_inicio"]);
             TimeSpan hora_fin = TimeSpan.Parse(HttpContext.Current.Request.Form["hora_fin"]);
-            decimal precio = decimal.Parse(HttpContext.Current.Request.Form["precio"]);
+            string rawPrecio = HttpContext.Current.Request.Form["precio"];
+            string normalized = rawPrecio.Replace(".", "").Replace(",", ".");
+            decimal precio = decimal.Parse(normalized, CultureInfo.InvariantCulture);
             bool enumerado = bool.Parse(HttpContext.Current.Request.Form["enumerado"]);
             int edad_minima = int.Parse(HttpContext.Current.Request.Form["edad_minima"]);
             int id_sala = int.Parse(HttpContext.Current.Request.Form["id_sala"]);
