@@ -104,7 +104,7 @@ namespace CulturaBCN_API.Controllers
 
             eventos evento = db.eventos.Find(id_evento);
 
-            evento.precio = precio;
+            evento.precio = precio/100;
             evento.fecha = fecha;
             evento.nombre = nombre;
             evento.descripcion = descripcion;
@@ -161,7 +161,7 @@ namespace CulturaBCN_API.Controllers
             evento.fecha = fecha;
             evento.hora_inicio = hora_inicio;
             evento.hora_fin = hora_fin;
-            evento.precio = precio;
+            evento.precio = precio / 100;
             evento.enumerado = enumerado;
             evento.edad_minima = edad_minima;
             evento.id_sala = id_sala;
