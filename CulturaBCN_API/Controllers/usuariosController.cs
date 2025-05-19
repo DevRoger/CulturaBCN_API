@@ -106,7 +106,7 @@ namespace CulturaBCN_API.Controllers
         }
         // GET: obtener el rol del usuario
         [HttpGet]
-        [Route("api/chats/{id_user}")]
+        [Route("api/usuarios/rol/{id_user}")]
         [ResponseType(typeof(int))]
         public async Task<IHttpActionResult> GetRolUser(int id_user)
         {
