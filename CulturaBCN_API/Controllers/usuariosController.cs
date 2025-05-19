@@ -104,6 +104,15 @@ namespace CulturaBCN_API.Controllers
 
             return Ok(true);
         }
+        // GET: obtener el rol del usuario
+        [HttpGet]
+        [Route("api/chats/{id_user}")]
+        [ResponseType(typeof(int))]
+        public async Task<IHttpActionResult> GetRolUser(int id_user)
+        {
+            int id_rol = int.Parse(db.usuarios.Where(u => u.id_usuario == id_user).Select(u => new { u.id_rol }).FirstOrDefault().ToString());
+            return Ok(id_rol);
+        }
 
         // DELETE: api/usuarios/5
         [ResponseType(typeof(usuarios))]
